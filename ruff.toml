@@ -1,0 +1,25 @@
+line-length = 100
+indent-width = 4
+
+# Rulse description: https://docs.astral.sh/ruff/rules/
+lint.extend-select = [
+    "B",
+    "E",
+    "F",
+    "N",
+    "W",
+    "ASYNC",
+    "C4",
+    "C90",
+    "ERA",
+    "NPY",
+    "PERF",
+    "PL",
+    "PTH",
+    "RET",
+    "SIM",
+    "T20",
+    "UP",
+]
+
+lint.ignore = []

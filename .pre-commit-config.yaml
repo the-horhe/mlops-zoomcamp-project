@@ -1,0 +1,37 @@
+---
+repos:
+  - repo: local
+    hooks:
+      - id: ruff-isort
+        name: ruff-isort
+        language: system
+        entry: ruff
+        args:
+          - "check"
+          - "--select=I"
+          - "--fix"
+        files: \.py$
+
+      - id: ruff-format
+        name: ruff-format
+        language: system
+        entry: ruff
+        args:
+          - "format"
+        files: \.py$
+
+      - id: ruff-check
+        name: ruff-check
+        language: system
+        entry: ruff
+        args:
+          - "check"
+          - "--fix"
+        files: \.py$
+
+      - id: mypy
+        name: rmypy
+        language: system
+        entry: mypy
+        files: \.py$
+        args: [--strict, --ignore-missing-imports]
