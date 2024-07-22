@@ -24,3 +24,6 @@ mypy = "^1.10.1"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.dagster]
+module_name = "drought_prediction"

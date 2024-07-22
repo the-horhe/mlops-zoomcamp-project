@@ -22,4 +22,6 @@ lint.extend-select = [
     "UP",
 ]
 
-lint.ignore = []
+lint.ignore = [
+    "N806", # Ignore snake kace vilolation for X_train type naming
+]
