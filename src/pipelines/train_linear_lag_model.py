@@ -1,6 +1,6 @@
 import mlflow
 import pandas as pd
-from dagster import AssetExecutionContext, asset
+from dagster import AssetExecutionContext, AssetSelection, asset, define_asset_job
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import root_mean_squared_error
 from sklearn.model_selection import train_test_split
@@ -84,3 +84,7 @@ def ml_model(context: AssetExecutionContext, feature_rich_data: pd.DataFrame) ->
         mlflow.sklearn.log_model(model, artifact_path="models")
 
         context.log.info(f"RMSE: {rmse}")
+
+
+if __name__ == "__main__":
+    job = define_asset_job("hackernews_job", selection=AssetSelection.all())
