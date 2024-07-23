@@ -1,0 +1,10 @@
+services:
+  prediction-service:
+    build:
+      # Docker context is root dir to access files there
+      context: ../
+      dockerfile: docker/prediction_service/Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - DP_MLFLOW_URL=http://mlflow:5000

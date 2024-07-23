@@ -15,6 +15,7 @@ matplotlib = "^3.9.1"
 mlflow = "^2.14.3"
 dagster = "^1.7.14"
 dagster-webserver = "^1.7.14"
+gunicorn = "^22.0.0"
 
 
 [tool.poetry.group.dev.dependencies]

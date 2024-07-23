@@ -1,0 +1,5 @@
+flask~=3.0.3
+numpy~=1.26.4
+mlflow~=2.14.3
+gunicorn~=22.0.0
+psutil==6.0.0
