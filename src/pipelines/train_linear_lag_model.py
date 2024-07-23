@@ -1,6 +1,8 @@
 import mlflow
 import pandas as pd
 from dagster import AssetExecutionContext, AssetSelection, asset, define_asset_job
+from evidently.metric_preset import DataDriftPreset
+from evidently.report import Report
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import root_mean_squared_error
 from sklearn.model_selection import train_test_split
@@ -36,7 +38,34 @@ def clean_data(raw_data: pd.DataFrame) -> pd.DataFrame:
 
 
 @asset
+def input_quality_report(raw_data: pd.DataFrame, clean_data: pd.DataFrame) -> None:
+    """
+    Check that we didn't corrupt input data on cleaning stage
+    """
+    input_df = raw_data
+    clean_df = clean_data
+
+    report = Report(
+        metrics=[
+            DataDriftPreset(),
+        ]
+    )
+    report.run(current_data=clean_df, reference_data=input_df)
+    report_dict = report.as_dict()
+
+    drifted_columns_num = report_dict["metrics"][0]["result"]["number_of_drifted_columns"]
+
+    if drifted_columns_num > 0:
+        raise RuntimeError(
+            "Columns drift detected after data cleanup for "
+            "{drifted_columns_num} of {columns_num} columns."
+        )
+
+
+@asset(deps=[input_quality_report])
 def feature_rich_data(clean_data: pd.DataFrame) -> pd.DataFrame:
+    # We generate full list of possible features just for
+    # transparancy and simplicity
     df = clean_data
     df["lag_1"] = df["PRCP"].shift(1)
     df["lag_7"] = df["PRCP"].shift(7)
@@ -47,7 +76,7 @@ def feature_rich_data(clean_data: pd.DataFrame) -> pd.DataFrame:
     df["rolling_mean_30"] = df["PRCP"].rolling(window=30).mean()
     df["rolling_std_30"] = df["PRCP"].rolling(window=30).std()
 
-    # drop rows with na in lags
+    # drop rows with na in lags columns
     df.dropna(inplace=True)
 
     return df
@@ -55,7 +84,7 @@ def feature_rich_data(clean_data: pd.DataFrame) -> pd.DataFrame:
 
 @asset
 def ml_model(context: AssetExecutionContext, feature_rich_data: pd.DataFrame) -> None:
-    # TODO: parameter
+    # TODO: parameter?
     mlflow.set_tracking_uri("http://127.0.0.1:5000")
     features = ["lag_365"]
 
@@ -80,7 +109,28 @@ def ml_model(context: AssetExecutionContext, feature_rich_data: pd.DataFrame) ->
 
         y_pred = model.predict(X_test)
         rmse = root_mean_squared_error(y_test, y_pred)
+
+        report = Report(
+            metrics=[
+                DataDriftPreset(),
+            ]
+        )
+
+        pred_df = pd.DataFrame(y_pred, columns=["prediction"])
+        test_df = pd.DataFrame(y_test.array, columns=["prediction"])
+
+        report.run(current_data=pred_df, reference_data=test_df)
+        report_dict = report.as_dict()
+
+        drifted_columns_num = report_dict["metrics"][0]["result"]["number_of_drifted_columns"]
+
+        if drifted_columns_num > 0:
+            # Normaly we should interrupt pipeline, but out model is crap, so
+            # there always be significant drift
+            context.log.error("Columns drift detected when comparing test/actual values.")
+
         mlflow.log_metric("RMSE", rmse)
+        mlflow.log_metric("DRIFT_DETECTED", drifted_columns_num > 0)
         mlflow.sklearn.log_model(model, artifact_path="models")
 
         context.log.info(f"RMSE: {rmse}")
