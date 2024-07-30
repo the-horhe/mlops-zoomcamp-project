@@ -1,6 +1,8 @@
+import os
+
 import mlflow
 import pandas as pd
-from dagster import AssetExecutionContext, AssetSelection, asset, define_asset_job
+from dagster import AssetExecutionContext, AssetSelection, Config, asset, define_asset_job
 from evidently.metric_preset import DataDriftPreset
 from evidently.report import Report
 from sklearn.linear_model import LinearRegression
@@ -8,11 +10,17 @@ from sklearn.metrics import root_mean_squared_error
 from sklearn.model_selection import train_test_split
 
 
+class PipelineConfig(Config):  # type: ignore
+    data_path: str = os.environ.get(
+        "DP_DATA_PATH", "https://www.ncei.noaa.gov/data/daily-summaries/access/SP000008181.csv"
+    )
+    ml_flow_url: str = os.environ.get("DP_MLFLOW_URL", "http://127.0.0.1:5000")
+
+
 @asset
-def raw_data() -> pd.DataFrame:
-    # TODO: parameter
-    data_url = "https://www.ncei.noaa.gov/data/daily-summaries/access/SP000008181.csv"
-    df = pd.read_csv(data_url, low_memory=False)
+def raw_data(config: PipelineConfig) -> pd.DataFrame:
+    data_path = config.data_path
+    df = pd.read_csv(data_path, low_memory=False)
 
     retuired_columns = ["DATE", "NAME", "PRCP"]
     if not set(retuired_columns).issubset(list(df.columns)):
@@ -83,9 +91,12 @@ def feature_rich_data(clean_data: pd.DataFrame) -> pd.DataFrame:
 
 
 @asset
-def ml_model(context: AssetExecutionContext, feature_rich_data: pd.DataFrame) -> None:
-    # TODO: parameter?
-    mlflow.set_tracking_uri("http://127.0.0.1:5000")
+def ml_model(
+    context: AssetExecutionContext,
+    feature_rich_data: pd.DataFrame,
+    config: PipelineConfig,
+) -> None:
+    mlflow.set_tracking_uri(config.ml_flow_url)
     features = ["lag_365"]
 
     df = feature_rich_data
