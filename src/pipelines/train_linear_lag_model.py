@@ -10,6 +10,9 @@ from sklearn.metrics import root_mean_squared_error
 from sklearn.model_selection import train_test_split
 
 
+class DriftDetectedError(BaseException): ...
+
+
 class PipelineConfig(Config):  # type: ignore
     data_path: str = os.environ.get(
         "DP_DATA_PATH", "https://www.ncei.noaa.gov/data/daily-summaries/access/SP000008181.csv"
@@ -64,7 +67,7 @@ def input_quality_report(raw_data: pd.DataFrame, clean_data: pd.DataFrame) -> No
     drifted_columns_num = report_dict["metrics"][0]["result"]["number_of_drifted_columns"]
 
     if drifted_columns_num > 0:
-        raise RuntimeError(
+        raise DriftDetectedError(
             "Columns drift detected after data cleanup for "
             "{drifted_columns_num} of {columns_num} columns."
         )
