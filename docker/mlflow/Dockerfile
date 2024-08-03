@@ -1,6 +1,6 @@
 FROM python:3.12.4-slim-bullseye
 
-RUN pip3 install mlflow
+RUN pip3 install mlflow~=2.14.3
 
 RUN mkdir /opt/mlflow
 WORKDIR /opt/mlflow
