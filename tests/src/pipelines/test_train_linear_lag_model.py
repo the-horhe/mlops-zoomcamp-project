@@ -2,6 +2,7 @@
 # Unit test for pipeline steeps.
 # """
 
+# Disable mypy error when accessing df attributes with dot notation.
 # mypy: disable-error-code="attr-defined"
 
 import pandas.api.types as ptypes
