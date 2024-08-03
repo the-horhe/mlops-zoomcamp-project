@@ -7,10 +7,10 @@ bash scripts/run-sandbox.sh --with-service
 
 # Run training  pipeline
 export DP_DATA_PATH="tests/data/data_sample_integration.csv"
-dagster job execute -f src/pipelines/jobs.py -j train_linear_model
+poetry run dagster job execute -f src/pipelines/jobs.py -j train_linear_model
 
 # Register model
-python3 tests/utils/register_latest_model.py
+poetry run python3 tests/utils/register_latest_model.py
 
 # Rester service to reload model
 docker compose -f docker/docker-compose-service.yaml restart prediction-service
