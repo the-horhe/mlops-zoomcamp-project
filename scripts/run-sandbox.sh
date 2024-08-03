@@ -12,14 +12,14 @@ while [ "${1-}" != "" ]; do
         ;;
         --stop )
           shift
-          docker-compose $COMPOSE_FILES stop
+          docker compose $COMPOSE_FILES stop
           exit 0
         ;;
     esac
 done
 
 # Docker-compose
-docker-compose $COMPOSE_FILES stop
-docker-compose $COMPOSE_FILES up --build -d
+docker compose $COMPOSE_FILES stop
+docker compose $COMPOSE_FILES up --build -d
 
 # TODO: print services links

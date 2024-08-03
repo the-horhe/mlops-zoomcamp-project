@@ -13,7 +13,7 @@ dagster job execute -f src/pipelines/jobs.py -j train_linear_model
 python3 tests/utils/register_latest_model.py
 
 # Rester service to reload model
-docker-compose -f docker/docker-compose-service.yaml restart prediction-service
+docker compose -f docker/docker-compose-service.yaml restart prediction-service
 # TODO: replace with healthcheck
 sleep 10  # service need some time to start and load model
 
