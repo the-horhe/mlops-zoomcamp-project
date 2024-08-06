@@ -11,6 +11,6 @@ services:
     healthcheck:
       test: curl localhost:8000/health
       interval: 5s
-      timeout: 1m
+      timeout: 10s
       retries: 10
       start_period: 5s
