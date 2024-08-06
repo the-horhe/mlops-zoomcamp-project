@@ -8,3 +8,9 @@ services:
       - "8000:8000"
     environment:
       - DP_MLFLOW_URL=http://mlflow:5000
+    healthcheck:
+      test: curl localhost:8000/health
+      interval: 5s
+      timeout: 20s
+      retries: 3
+      start_period: 5s

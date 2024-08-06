@@ -12,10 +12,10 @@ poetry run dagster job execute -f src/pipelines/jobs.py -j train_linear_model
 # Register model
 poetry run python3 tests/utils/register_latest_model.py
 
-# Rester service to reload model
-docker compose -f docker/docker-compose-service.yaml restart prediction-service
-# TODO: replace with healthcheck
-sleep 10  # service need some time to start and load model
+# Restart service to reload model
+# TODO: restart only web-service container, but with health status await
+bash scripts/run-sandbox.sh --with-service --stop
+bash scripts/run-sandbox.sh --with-service
 
 # Get prediction
 prediction=$(curl -X POST http://127.0.0.1:8000/predict -H "Content-Type: application/json" -d '{"lag_365": [0]}')

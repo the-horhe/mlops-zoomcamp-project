@@ -20,6 +20,6 @@ done
 
 # Docker-compose
 docker compose $COMPOSE_FILES stop
-docker compose $COMPOSE_FILES up --build -d
+docker compose $COMPOSE_FILES up --build -d --wait
 
 # TODO: print services links
