@@ -5,7 +5,7 @@ set -uoe pipefail
 # Prepare sandbox environment
 bash scripts/run-sandbox.sh --with-service || true
 
-docker-compose -f docker/docker-compose-service.yaml logs prediction-service
+docker compose -f docker/docker-compose-service.yaml logs prediction-service
 
 # Run training  pipeline
 export DP_DATA_PATH="tests/data/data_sample_integration.csv"
@@ -19,7 +19,7 @@ poetry run python3 tests/utils/register_latest_model.py
 bash scripts/run-sandbox.sh --with-service --stop
 bash scripts/run-sandbox.sh --with-service || true
 
-docker-compose -f docker/docker-compose-service.yaml logs prediction-service
+docker compose -f docker/docker-compose-service.yaml logs prediction-service
 
 exit 1
 
