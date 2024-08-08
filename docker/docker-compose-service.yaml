@@ -8,6 +8,7 @@ services:
       - "8000:8000"
     environment:
       - DP_MLFLOW_URL=http://mlflow:5000
+      - DP_MLFLOW_MODEL_NAME=${DP_MLFLOW_MODEL_NAME:-drought-prediction}
     healthcheck:
       test: curl localhost:8000/health
       interval: 5s
