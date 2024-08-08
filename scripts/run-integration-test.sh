@@ -3,7 +3,9 @@
 set -uoe pipefail
 
 # Prepare sandbox environment
-bash scripts/run-sandbox.sh --with-service
+bash scripts/run-sandbox.sh --with-service || true
+
+docker-compose -f docker/docker-compose-service.yaml logs prediction-service
 
 # Run training  pipeline
 export DP_DATA_PATH="tests/data/data_sample_integration.csv"
