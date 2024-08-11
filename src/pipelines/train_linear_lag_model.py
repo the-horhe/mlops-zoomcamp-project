@@ -18,6 +18,9 @@ class PipelineConfig(Config):  # type: ignore
         "DP_DATA_PATH", "https://www.ncei.noaa.gov/data/daily-summaries/access/SP000008181.csv"
     )
     ml_flow_url: str = os.environ.get("DP_MLFLOW_URL", "http://127.0.0.1:5000")
+    mlflow_s3_endpoint: str = os.environ.get("MLFLOW_S3_ENDPOINT_URL", "http://localhost:8999")
+    s3_key_id: str = os.environ.get("AWS_ACCESS_KEY_ID", "minioadmin")
+    s3_key: str = os.environ.get("AWS_SECRET_ACCESS_KEY", "minioadmin")
 
 
 @asset
@@ -100,6 +103,13 @@ def ml_model(
     config: PipelineConfig,
 ) -> None:
     mlflow.set_tracking_uri(config.ml_flow_url)
+    # Set s3 endpoint to switch between minio and real s3
+    # See https://docs.aws.amazon.com/general/latest/gr/s3.html
+    # for real endpoint urlsecho
+    os.environ["MLFLOW_S3_ENDPOINT_URL"] = config.mlflow_s3_endpoint
+    os.environ["AWS_ACCESS_KEY_ID"] = config.s3_key_id
+    os.environ["AWS_SECRET_ACCESS_KEY"] = config.s3_key
+
     features = ["lag_365"]
 
     df = feature_rich_data

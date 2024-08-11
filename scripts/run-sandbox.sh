@@ -22,4 +22,11 @@ done
 docker compose $COMPOSE_FILES stop
 docker compose $COMPOSE_FILES up --build -d --wait
 
+# Create localstack bucket
+## Setup minio client - add sandbox config
+docker compose $COMPOSE_FILES exec s3 bash -c "mc config host add sandbox http://localhost:9000 minioadmin minioadmin"
+## Add bucket using sandbox config
+docker compose $COMPOSE_FILES exec s3 bash -c "mc mb -p sandbox/test-localstack-bucket"
+
+
 # TODO: print services links
