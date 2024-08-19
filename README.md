@@ -61,6 +61,12 @@ All the training pipeline is handled by dagster. To run it:
 ```shell
 dagster job execute -f src/pipelines/jobs.py -j train_linear_model
 ```
+You can also run dagster UI to manage runs and check status:
+```
+dagster dev -f src/pipelines/jobs.py 
+```
+It will be available at http://127.0.0.1:3000/
+
 You can check MLFlow UI then - all metrics and artifacts are stored there.
 
 ## Running inference web-service
