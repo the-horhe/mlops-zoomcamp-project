@@ -90,7 +90,7 @@ You can use curl to send API request now:
 curl -X POST http://127.0.0.1:8000/predict -H "Content-Type: application/json" -d '{"lag_365": [0, 1000]}'
 ```
 
-You can check service logs usinf docker logs: `docker logs docker-prediction-service-1`
+You can check service logs using docker logs: `docker logs docker-prediction-service-1`
 
 ## Configuration via env variables
 There is some env variables that are being used to configure general parameters:  
